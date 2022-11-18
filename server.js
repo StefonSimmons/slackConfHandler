@@ -44,8 +44,8 @@ app.post('/', async (req, res) => {
         const {oldestMS, latestMS} = getDateRange(body.text)
     
         const messages = await getChannelHistory(channelID, oldestMS, latestMS)
-        console.info(messages)
-        res.json(messages)
+        console.log(messages)
+        res.status(200).send('working') // message that is sent back to user in slack
         
     } catch (error) {
         console.error('err', error)
