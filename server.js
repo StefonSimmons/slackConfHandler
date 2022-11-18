@@ -1,13 +1,17 @@
 const express = require('express')
 const app = express()
 const logger = require('morgan')
-const {getChannelHistory} = require('./app')
+const {getChannelHistory, getDateRange} = require('./app')
 
 
 const PORT = process.env.PORT || 3000
 app.use(logger('combined'))
-// app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
+
+
+const parser = process.env.PORT ? express.urlencoded({ extended: true }) : express.json()
+
+app.use(parser)
+
 app.listen(PORT, () => {
     console.log(`Listening on PORT ${PORT}`)
 })
@@ -34,31 +38,17 @@ app.post('/', async (req, res) => {
          trigger_id: '4408942534097.4391623317253.98ffa22b9781055b4495a983b7be6e8c'
        }
      */
-  
-    const {body}= req
-
-    const dateArr = body.text.split('; ')
-    const oldest = dateArr[0]
-    const oldestDateStr = oldest.split(' ')[0]
-    const oldestTimeStr = oldest.split(' ')[1]
-
-    const latest = dateArr[1]
-    const latestDateStr = latest.split(' ')[0]
-    const latestTimeStr = latest.split(' ')[1]
-    const oldestDateArr = oldestDateStr.split('/')
-    const latestDateArr = latestDateStr.split('/')
-
-    const oldestTimeArr = oldestTimeStr.split(':')
-    const latestTimeArr = latestTimeStr.split(':')
-
-    const oldestDate = new Date(oldestDateArr[2], oldestDateArr[0]-1, oldestDateArr[1], oldestTimeArr[0], oldestTimeArr[1], oldestTimeArr[2])
-    const latestDate = new Date(latestDateArr[2], latestDateArr[0]-1, latestDateArr[1], latestTimeArr[0], latestTimeArr[1], latestTimeArr[2])
-    const channelID = body.channel_id
-    const oldestMS = ((oldestDate.getTime()/1000)-1).toString()
-    const latestMS = ((latestDate.getTime()/1000)+1).toString()
-
-    await getChannelHistory(channelID, oldestMS, latestMS)
+    try {
+        const {body} = req
+        const channelID = body.channel_id
+        const {oldestMS, latestMS} = getDateRange(body.text)
+    
+        const messages = await getChannelHistory(channelID, oldestMS, latestMS)
+        res.json(messages)
+        
+    } catch (error) {
+        console.error('err', error)
+    }
 
     
-    res.json(req.body)
 })
