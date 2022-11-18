@@ -1,8 +1,9 @@
 const express = require('express')
-const axios = require('axios')
 const app = express()
+const logger = require('morgan')
 
 const PORT = process.env.PORT || 3000
+app.use(logger('combined'))
 app.use(express.json())
 app.listen(PORT, () => {
     console.log(`Listening on PORT ${PORT}`)
@@ -13,5 +14,6 @@ app.get('/', (_, res) => {
 })
 
 app.post('/', (req, res) => {
+    console.log(req.body)
     res.json(req.body)
 })
