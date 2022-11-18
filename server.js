@@ -44,6 +44,7 @@ app.post('/', async (req, res) => {
         const {oldestMS, latestMS} = getDateRange(body.text)
     
         const messages = await getChannelHistory(channelID, oldestMS, latestMS)
+        console.info(messages)
         res.json(messages)
         
     } catch (error) {
