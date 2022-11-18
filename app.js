@@ -7,7 +7,7 @@ const getChannelHistory = async (channelID, oldestTime, latestTime) => {
       const messages = await web.conversations.history({channel:channelID, oldest: oldestTime, latest: latestTime});
       return messages
     } catch (error) {
-      console.log(error.data);
+      console.log('getChannelHistory Err',error);
     }
 }
 
