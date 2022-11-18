@@ -8,6 +8,10 @@ app.listen(PORT, () => {
     console.log(`Listening on PORT ${PORT}`)
 })
 
+app.get('/', (_, res) => {
+    res.json({"greeting": "welcome", "today": new Date()})
+})
+
 app.post('/', (req, res) => {
     res.json(req.body)
 })
