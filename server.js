@@ -4,7 +4,7 @@ const logger = require('morgan')
 
 const PORT = process.env.PORT || 3000
 app.use(logger('combined'))
-app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.listen(PORT, () => {
     console.log(`Listening on PORT ${PORT}`)
 })
