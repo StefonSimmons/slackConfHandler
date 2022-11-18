@@ -21,6 +21,7 @@ app.get('/', (_, res) => {
 })
 
 app.post('/', async (req, res) => {
+    console.log(req.body)
     /**
        {
          token: '4HgTB5nDVTEUDHvhUw34NbGV',
