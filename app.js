@@ -4,8 +4,8 @@ const web = new WebClient(process.env.SLACK_CONF_BOT_TOKEN);
 
 const getChannelHistory = async (channelID, oldestTime, latestTime) => {
     try {
-      const res = await web.conversations.history({channel:channelID, oldest: oldestTime, latest: latestTime, inclusive: true});
-      return res
+      const resp = await web.conversations.history({channel:channelID, oldest: oldestTime, latest: latestTime, inclusive: true});
+      return resp
     } catch (error) {
       console.log('getChannelHistory ERR',error);
     }
