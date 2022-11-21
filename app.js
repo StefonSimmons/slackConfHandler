@@ -28,8 +28,10 @@ const getDateRange = (param) => {
 
     const oldestDate = new Date(oldestDateArr[2], oldestDateArr[0]-1, oldestDateArr[1], oldestTimeArr[0], oldestTimeArr[1], oldestTimeArr[2])
     const latestDate = new Date(latestDateArr[2], latestDateArr[0]-1, latestDateArr[1], latestTimeArr[0], latestTimeArr[1], latestTimeArr[2])
+    console.log('Dates:',oldestDate, latestDate)
     const oldestMS = ((oldestDate.getTime()/1000)).toString()
     const latestMS = ((latestDate.getTime()/1000)).toString()
+    console.log('MSecs',oldestMS, latestMS)
     return {oldestMS, latestMS}
 }
 
