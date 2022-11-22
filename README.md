@@ -1,4 +1,4 @@
-# Save Message Command
+# Slack to Confluence Slack app
 
 A Slack slash command to save messages by date to confluence. Request URL: https://slack-handler.onrender.com.
 
@@ -16,3 +16,13 @@ Slack slash command:
 | --------- | ------------------------------------------------------------------------ |
 | from_date | (string) messages after this datetime will be included in results.  |
 | to_date   | (string) messages before this datetime will be included in results. |
+
+
+## Setup 
+
+The Slack to Confluence Slack app is not configured for collaboration and is controlled by the "**test-slack-to-confluence**" workspace
+
+Once the app is availabled for others, invite the  bot into your workspace
+```
+/invite Slack to Confluence
+```
