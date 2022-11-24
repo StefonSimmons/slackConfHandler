@@ -26,8 +26,8 @@ const getDateRange = (timeRange, tzOffset=0) => {
     const [latestHH, latestMM, latestSec] = latestTimeVal.split(':')
     const latestDate = new Date(latestYear, latestMonth-1, latestDay, latestHH, latestMM, latestSec)
 
-    const oldestMS = ((oldestDate.getTime()/1000) + tzOffset).toString()
-    const latestMS = ((latestDate.getTime()/1000) + tzOffset).toString()
+    const oldestMS = ((oldestDate.getTime()/1000) - tzOffset).toString()
+    const latestMS = ((latestDate.getTime()/1000) - tzOffset).toString()
     console.log(latestDate.getTime()/1000, tzOffset)
     return {oldestMS, latestMS}
 }
