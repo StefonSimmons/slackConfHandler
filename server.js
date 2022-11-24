@@ -64,7 +64,7 @@ app.post('/', async (req, res) => {
 
         console.log('user::', user)
 
-        const {oldestMS, latestMS} = getDateRange(body.text, user.tzOffset)
+        const {oldestMS, latestMS} = getDateRange(body.text, user.tz_offset)
         
 
         const resp = await getChannelHistory(channelID, oldestMS, latestMS)
