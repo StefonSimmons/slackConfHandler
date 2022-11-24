@@ -27,14 +27,12 @@ app.post('/', async (req, res) => {
             getDateRange(body.text, user.tz_offset)
         :
             getDateRange(body.text)
-        
-        const {messages} = await getChannelHistory(channelID, oldestMS, latestMS)
 
+        const {messages} = await getChannelHistory(channelID, oldestMS, latestMS)
+        
         // Message that is sent back to user in slack
         if(messages.length){
             const formattedContent = await formatMessages(messages, channelID)
-            // console.log(formattedContent)
-            // res.json({status : 200, results: formattedContent})
             res.send(formattedContent)
         }else{
             res.status(404).send({err: "no messages"})

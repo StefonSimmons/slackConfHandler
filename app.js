@@ -17,24 +17,34 @@ const getUserInfo = async (userID) => {
 }
 
 const getDateRange = (timeRange, tzOffset=0) => {
-    const [oldest, latest] = timeRange.split('; ')
-    
-    // oldest datetime extraction
-    const [oldestDateVal, oldestTimeVal] = oldest.split(' ')
-    const [oldMonth, oldDay, oldYear] = oldestDateVal.split('/')
-    const [oldHH, oldMM, oldSec] = oldestTimeVal.split(':')
-    const oldestDate = new Date(oldYear, oldMonth-1, oldDay, oldHH, oldMM, oldSec)
+    if(timeRange.includes(';')){
+        const [oldest, latest] = timeRange.split('; ')
+        
+        // oldest datetime extraction
+        const [oldestDateVal, oldestTimeVal] = oldest.split(' ')
+        const [oldMonth, oldDay, oldYear] = oldestDateVal.split('/')
+        const [oldHH, oldMM, oldSec] = oldestTimeVal.split(':')
+        const oldestDate = new Date(oldYear, oldMonth-1, oldDay, oldHH, oldMM, oldSec)
+        
+        // latest datetime extraction
+        const [latestDateVal, latestTimeVal] = latest.split(' ')
+        const [latestMonth, latestDay, latestYear] = latestDateVal.split('/')
+        const [latestHH, latestMM, latestSec] = latestTimeVal.split(':')
+        const latestDate = new Date(latestYear, latestMonth-1, latestDay, latestHH, latestMM, latestSec)
+        
+        const oldestMS = ((oldestDate.getTime()/1000) - tzOffset).toString()
+        const latestMS = ((latestDate.getTime()/1000) - tzOffset).toString()
+        return {oldestMS, latestMS}
+    }else if (timeRange.toLowerCase() === "today"){
+        const today = new Date()
+        const year = today.getFullYear()
+        const month = today.getMonth()
+        const date = today.getDate()
+        const oldestMS = ((new Date(year, month, date).getTime()/1000) - tzOffset).toString()
+        const latestMS = ((today.getTime()/1000) - tzOffset).toString()
+        return {oldestMS, latestMS}
+    }
 
-    // latest datetime extraction
-    const [latestDateVal, latestTimeVal] = latest.split(' ')
-    const [latestMonth, latestDay, latestYear] = latestDateVal.split('/')
-    const [latestHH, latestMM, latestSec] = latestTimeVal.split(':')
-    const latestDate = new Date(latestYear, latestMonth-1, latestDay, latestHH, latestMM, latestSec)
-
-    const oldestMS = ((oldestDate.getTime()/1000) - tzOffset).toString()
-    const latestMS = ((latestDate.getTime()/1000) - tzOffset).toString()
-
-    return {oldestMS, latestMS}
 }
 
 const formatMessages = async (messages, channelID) => {
