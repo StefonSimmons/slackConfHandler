@@ -11,6 +11,11 @@ const getChannelHistory = async (channelID, oldestTime, latestTime) => {
     }
 }
 
+
+const getUserInfo = async (userID) => {
+    return await web.users.info({user: userID})
+}
+
 const getDateRange = (timeRange, tzOffset=0) => {
     const [oldest, latest] = timeRange.split('; ')
     
@@ -28,13 +33,25 @@ const getDateRange = (timeRange, tzOffset=0) => {
 
     const oldestMS = ((oldestDate.getTime()/1000) - tzOffset).toString()
     const latestMS = ((latestDate.getTime()/1000) - tzOffset).toString()
-    console.log(latestDate.getTime()/1000, tzOffset)
+
     return {oldestMS, latestMS}
 }
 
+const formatMessages = async (messages, channelID) => {
+    let paragraph = ""
 
-const getUserInfo = async (userID) => {
-    return await web.users.info({user: userID})
+    // Note: do not use async in forEach: https://gist.github.com/joeytwiddle/37d2085425c049629b80956d3c618971
+    for(message of messages.reverse()){
+        paragraph += `${message.text}\n`
+        if(message.reply_count){
+            const replies = await web.conversations.replies({channel: channelID, ts: message.thread_ts}) 
+            replies.messages.forEach((reply, idx) => {    
+                idx && (paragraph += `\t- ${reply.text}\n`)
+            })
+        }
+    }
+
+    return paragraph
 }
 
-module.exports = {getChannelHistory, getDateRange, getUserInfo}
+module.exports = {getChannelHistory, getDateRange, getUserInfo, formatMessages}
