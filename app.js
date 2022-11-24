@@ -12,24 +12,23 @@ const getChannelHistory = async (channelID, oldestTime, latestTime) => {
 }
 
 const getDateRange = (param) => {
-    const dateArr = param.split('; ')
-    const oldest = dateArr[0]
-    const oldestDateStr = oldest.split(' ')[0]
-    const oldestTimeStr = oldest.split(' ')[1]
+    // https://api.slack.com/reference/surfaces/formatting#date-formatting
+    const [oldest, latest] = param.split('; ')
+    
+    // oldest datetime extraction
+    const [oldestDateVal, oldestTimeVal] = oldest.split(' ')
+    const [oldMonth, oldDay, oldYear] = oldestDateVal.split('/')
+    const [oldHH, oldMM, oldSec] = oldestTimeVal.split(':')
+    const oldestDate = new Date(oldYear, oldMonth-1, oldDay, oldHH, oldMM, oldSec)
 
-    const latest = dateArr[1]
-    const latestDateStr = latest.split(' ')[0]
-    const latestTimeStr = latest.split(' ')[1]
-    const oldestDateArr = oldestDateStr.split('/')
-    const latestDateArr = latestDateStr.split('/')
+    // latest datetime extraction
+    const [latestDateVal, latestTimeVal] = latest.split(' ')
+    const [latestMonth, latestDay, latestYear] = latestDateVal.split('/')
+    const [latestHH, latestMM, latestSec] = latestTimeVal.split(':')
+    const latestDate = new Date(latestYear, latestMonth-1, latestDay, latestHH, latestMM, latestSec)
 
-    const oldestTimeArr = oldestTimeStr.split(':')
-    const latestTimeArr = latestTimeStr.split(':')
-
-    const oldestDate = new Date(oldestDateArr[2], oldestDateArr[0]-1, oldestDateArr[1], oldestTimeArr[0], oldestTimeArr[1], oldestTimeArr[2])
-    const latestDate = new Date(latestDateArr[2], latestDateArr[0]-1, latestDateArr[1], latestTimeArr[0], latestTimeArr[1], latestTimeArr[2])
-    const oldestMS = ((oldestDate.getTime()/1000)).toString()
-    const latestMS = ((latestDate.getTime()/1000)).toString()
+    const oldestMS = ((new Date(oldestDate.toUTCString()).getTime()/1000)).toString()
+    const latestMS = ((new Date(latestDate.toUTCString()).getTime())/1000).toString()
     return {oldestMS, latestMS}
 }
 
