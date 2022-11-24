@@ -11,9 +11,8 @@ const getChannelHistory = async (channelID, oldestTime, latestTime) => {
     }
 }
 
-const getDateRange = (param) => {
-    // https://api.slack.com/reference/surfaces/formatting#date-formatting
-    const [oldest, latest] = param.split('; ')
+const getDateRange = (timeRange, tzOffset) => {
+    const [oldest, latest] = timeRange.split('; ')
     
     // oldest datetime extraction
     const [oldestDateVal, oldestTimeVal] = oldest.split(' ')
@@ -27,9 +26,14 @@ const getDateRange = (param) => {
     const [latestHH, latestMM, latestSec] = latestTimeVal.split(':')
     const latestDate = new Date(latestYear, latestMonth-1, latestDay, latestHH, latestMM, latestSec)
 
-    const oldestMS = ((new Date(oldestDate.toUTCString()).getTime()/1000)).toString()
-    const latestMS = ((new Date(latestDate.toUTCString()).getTime())/1000).toString()
+    const oldestMS = ((oldestDate.getTime()/1000) + tzOffset).toString()
+    const latestMS = ((latestDate.getTime()/1000) + tzOffset).toString()
     return {oldestMS, latestMS}
 }
 
-module.exports = {getChannelHistory, getDateRange}
+
+const getUserInfo = async (userID) => {
+    return await web.users.info({user: userID})
+}
+
+module.exports = {getChannelHistory, getDateRange, getUserInfo}

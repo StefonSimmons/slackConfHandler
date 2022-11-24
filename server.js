@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const logger = require('morgan')
-const {getChannelHistory, getDateRange} = require('./app')
+const {getChannelHistory, getDateRange, getUserInfo} = require('./app')
 
 
 const PORT = process.env.PORT || 3000
@@ -60,11 +60,15 @@ app.post('/', async (req, res) => {
     try {
         const {body} = req
         const channelID = body.channel_id
-        const {oldestMS, latestMS} = getDateRange(body.text)
-    
+        const user = await getUserInfo(body.user_id)
+
+        console.log('user::', user)
+
+        const {oldestMS, latestMS} = getDateRange(body.text, user.tzOffset)
+        
+
         const resp = await getChannelHistory(channelID, oldestMS, latestMS)
-        console.log(resp)
-        console.log('MESSAGES',resp.messages)
+        console.log('messages::',resp)
         if(resp.messages.length){
             res.json({status : 200, msg:"working"}) // message that is sent back to user in slack
         }else{
