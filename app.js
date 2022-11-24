@@ -38,20 +38,22 @@ const getDateRange = (timeRange, tzOffset=0) => {
 }
 
 const formatMessages = async (messages, channelID) => {
-    let paragraph = ""
+    let conversation = ""
 
     // Note: do not use async in forEach: https://gist.github.com/joeytwiddle/37d2085425c049629b80956d3c618971
     for(message of messages.reverse()){
-        paragraph += `${message.text}\n`
+        conversation += `${message.text}\n`
         if(message.reply_count){
             const replies = await web.conversations.replies({channel: channelID, ts: message.thread_ts}) 
+            let thread = ""
             replies.messages.forEach((reply, idx) => {    
-                idx && (paragraph += `\t- ${reply.text}\n`)
+                idx && (thread += `\t- ${reply.text}\n`)
             })
+            conversation += thread
         }
     }
 
-    return paragraph
+    return conversation
 }
 
 module.exports = {getChannelHistory, getDateRange, getUserInfo, formatMessages}

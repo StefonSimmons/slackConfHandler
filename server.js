@@ -33,14 +33,15 @@ app.post('/', async (req, res) => {
         // Message that is sent back to user in slack
         if(messages.length){
             const formattedContent = await formatMessages(messages, channelID)
-            console.log(formattedContent)
-            res.json({status : 200, msg:"working"})
+            // console.log(formattedContent)
+            // res.json({status : 200, results: formattedContent})
+            res.send(formattedContent)
         }else{
-            res.json({err: "no messages"})
+            res.status(404).send({err: "no messages"})
         }
         
     } catch (error) {
-        console.error('err', error)
+        console.error('ERROR: ', error.message)
     }
 
     
