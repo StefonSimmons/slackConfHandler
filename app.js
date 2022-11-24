@@ -4,14 +4,14 @@ const web = new WebClient(process.env.SLACK_CONF_BOT_TOKEN);
 
 const getChannelHistory = async (channelID, oldestTime, latestTime) => {
     try {
-      const resp = await web.conversations.history({channel:channelID, oldest: oldestTime, latest: latestTime, inclusive: true});
-      return resp
+        const resp = await web.conversations.history({channel:channelID, oldest: oldestTime, latest: latestTime, inclusive: true});
+        return resp
     } catch (error) {
-      console.log('getChannelHistory ERR',error);
+        console.log('getChannelHistory ERR',error);
     }
 }
 
-const getDateRange = (timeRange, tzOffset) => {
+const getDateRange = (timeRange, tzOffset=0) => {
     const [oldest, latest] = timeRange.split('; ')
     
     // oldest datetime extraction
@@ -28,6 +28,7 @@ const getDateRange = (timeRange, tzOffset) => {
 
     const oldestMS = ((oldestDate.getTime()/1000) + tzOffset).toString()
     const latestMS = ((latestDate.getTime()/1000) + tzOffset).toString()
+    console.log(latestDate.getTime()/1000, tzOffset)
     return {oldestMS, latestMS}
 }
 

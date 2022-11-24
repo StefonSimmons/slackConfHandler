@@ -3,12 +3,11 @@ const app = express()
 const logger = require('morgan')
 const {getChannelHistory, getDateRange, getUserInfo} = require('./app')
 
-
 const PORT = process.env.PORT || 3000
-app.use(logger('combined'))
-
+const ENV = process.env.PORT ? 'production': 'dev'
 
 // const parser = process.env.PORT ? express.urlencoded({ extended: true }) : express.json()
+app.use(logger('combined'))
 
 app.use(express.urlencoded({ extended: true }))
 
@@ -21,7 +20,7 @@ app.get('/', (_, res) => {
 })
 
 app.post('/', async (req, res) => {
-    console.log(req.body)
+    console.log('REQ BODY',req.body)
     /**
        {
          token: '4HgTB5nDVTEUDHvhUw34NbGV',
@@ -60,11 +59,13 @@ app.post('/', async (req, res) => {
     try {
         const {body} = req
         const channelID = body.channel_id
-        const user = await getUserInfo(body.user_id)
+        const {user} = await getUserInfo(body.user_id)
 
         console.log('user::', user)
-
-        const {oldestMS, latestMS} = getDateRange(body.text, user.tz_offset)
+        const {oldestMS, latestMS} = ENV === "production" ?
+            getDateRange(body.text, user.tz_offset)
+        :
+            getDateRange(body.text)
         
 
         const resp = await getChannelHistory(channelID, oldestMS, latestMS)
