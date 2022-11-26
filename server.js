@@ -2,7 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const logger = require('morgan')
-const {getChannelHistory, getDateRange, getUserInfo, formatMessages} = require('./app')
+const {getChannelHistory, getDateRangeMS, getUserInfo, formatMessages} = require('./app')
 
 const PORT = process.env.PORT || 3000
 const ENV = process.env.PORT ? 'production': 'dev'
@@ -25,9 +25,9 @@ app.post('/', async (req, res) => {
         const {user} = await getUserInfo(body.user_id)
 
         const {oldestMS, latestMS} = ENV === "production" ?
-            getDateRange(body.text, user.tz_offset)
+            getDateRangeMS(body.text, user.tz_offset)
         :
-            getDateRange(body.text)
+            getDateRangeMS(body.text)
 
         const {messages} = await getChannelHistory(channelID, oldestMS, latestMS)
         

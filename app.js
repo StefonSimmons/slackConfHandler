@@ -16,31 +16,14 @@ const getUserInfo = async (userID) => {
     return await web.users.info({user: userID})
 }
 
-const getDateRange = (timeRange, tzOffset=0) => {
+const getDateRangeMS = (timeRange, tzOffset=0) => {
     if(timeRange.includes(';')){
-        const [oldest, latest] = timeRange.split('; ')
-        
-        // oldest datetime extraction
-        const [oldestDateVal, oldestTimeVal] = oldest.split(' ')
-        const [oldMonth, oldDay, oldYear] = oldestDateVal.split('/')
-        const [oldHH, oldMM, oldSec] = oldestTimeVal.split(':')
-        const oldestDate = new Date(oldYear, oldMonth-1, oldDay, oldHH, oldMM, oldSec)
-        
-        // latest datetime extraction
-        const [latestDateVal, latestTimeVal] = latest.split(' ')
-        const [latestMonth, latestDay, latestYear] = latestDateVal.split('/')
-        const [latestHH, latestMM, latestSec] = latestTimeVal.split(':')
-        const latestDate = new Date(latestYear, latestMonth-1, latestDay, latestHH, latestMM, latestSec)
-        
-        const oldestMS = ((oldestDate.getTime()/1000) - tzOffset).toString()
-        const latestMS = ((latestDate.getTime()/1000) - tzOffset).toString()
-        return {oldestMS, latestMS}
+        return getDateTimeMSRange(timeRange, tzOffset)
     }else if (timeRange.toLowerCase() === "today"){
-        return getSingularDayMSRange('today', tzOffset)
+        return getDayRefMSRange('today', tzOffset)
     }else if (timeRange.toLowerCase() === "yesterday"){
-        return getSingularDayMSRange('yesterday', tzOffset)
+        return getDayRefMSRange('yesterday', tzOffset)
     }
-
 }
 
 const formatMessages = async (messages, channelID) => {
@@ -63,8 +46,10 @@ const formatMessages = async (messages, channelID) => {
     return conversation
 }
 
-/** HELPERS */
-const getSingularDayMSRange = (dayRef, tzOffset) => {
+// ================
+// HELPER FUNCTIONS
+// ================
+const getDayRefMSRange = (dayRef, tzOffset) => {
     let day = new Date()
 
     if(dayRef === "yesterday"){
@@ -79,4 +64,35 @@ const getSingularDayMSRange = (dayRef, tzOffset) => {
     return {oldestMS, latestMS}
 }
 
-module.exports = {getChannelHistory, getDateRange, getUserInfo, formatMessages}
+const getDateTimeMSRange = (timeRange, tzOffset) => {
+    const [oldest, latest] = timeRange.split('; ')
+
+    // oldest datetime extraction
+    const oldestMS = extractDateTimeMS(oldest, tzOffset)
+
+    // latest datetime extraction
+    const latestMS = extractDateTimeMS(latest, tzOffset)
+
+    return {oldestMS, latestMS}
+}
+
+function extractDateTimeMS(dateTimeStr, tzOffset){
+    const [dateVal, timeVal] = dateTimeStr.split(' ')
+    let month, day, year
+    if(dateVal.includes('/')){
+        [month, day, year] = dateVal.split('/')
+    }else if (dateVal === 'today'){
+        today = new Date()
+        year = today.getFullYear()
+        month = today.getMonth() + 1
+        day = today.getDate()
+    }
+    const [HH, MM, Seconds] = timeVal.split(':')
+    const dateTime = new Date(year, month-1, day, HH, MM, Seconds)
+
+    // convert to milliseconds and UTC
+    const dateMS = ((dateTime.getTime()/1000) - tzOffset).toString()
+    return dateMS
+}
+
+module.exports = {getChannelHistory, getDateRangeMS, getUserInfo, formatMessages}
