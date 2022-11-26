@@ -36,22 +36,9 @@ const getDateRange = (timeRange, tzOffset=0) => {
         const latestMS = ((latestDate.getTime()/1000) - tzOffset).toString()
         return {oldestMS, latestMS}
     }else if (timeRange.toLowerCase() === "today"){
-        const today = new Date()
-        const year = today.getFullYear()
-        const month = today.getMonth()
-        const date = today.getDate()
-        const oldestMS = ((new Date(year, month, date).getTime()/1000) - tzOffset).toString()
-        const latestMS = ((today.getTime()/1000) - tzOffset).toString()
-        return {oldestMS, latestMS}
+        return getSingularDayMSRange('today', tzOffset)
     }else if (timeRange.toLowerCase() === "yesterday"){
-        const today = new Date()
-        const yesterday = new Date(today.setDate(today.getDate()-1))
-        const year = yesterday.getFullYear()
-        const month = yesterday.getMonth()
-        const date = yesterday.getDate()
-        const oldestMS = ((new Date(year, month, date).getTime()/1000) - tzOffset).toString()
-        const latestMS = ((yesterday.getTime()/1000) - tzOffset).toString()
-        return {oldestMS, latestMS}
+        return getSingularDayMSRange('yesterday', tzOffset)
     }
 
 }
@@ -74,6 +61,22 @@ const formatMessages = async (messages, channelID) => {
     }
 
     return conversation
+}
+
+/** HELPERS */
+const getSingularDayMSRange = (dayRef, tzOffset) => {
+    let day = new Date()
+
+    if(dayRef === "yesterday"){
+        day = new Date(day.setDate(day.getDate() - 1))
+    }
+
+    const year = day.getFullYear()
+    const month = day.getMonth()
+    const date = day.getDate()
+    const oldestMS = ((new Date(year, month, date).getTime()/1000) - tzOffset).toString()
+    const latestMS = ((day.getTime()/1000) - tzOffset).toString()
+    return {oldestMS, latestMS}
 }
 
 module.exports = {getChannelHistory, getDateRange, getUserInfo, formatMessages}
