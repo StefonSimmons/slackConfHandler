@@ -43,6 +43,15 @@ const getDateRange = (timeRange, tzOffset=0) => {
         const oldestMS = ((new Date(year, month, date).getTime()/1000) - tzOffset).toString()
         const latestMS = ((today.getTime()/1000) - tzOffset).toString()
         return {oldestMS, latestMS}
+    }else if (timeRange.toLowerCase() === "yesterday"){
+        const today = new Date()
+        const yesterday = new Date(today.setDate(today.getDate()-1))
+        const year = yesterday.getFullYear()
+        const month = yesterday.getMonth()
+        const date = yesterday.getDate()
+        const oldestMS = ((new Date(year, month, date).getTime()/1000) - tzOffset).toString()
+        const latestMS = ((yesterday.getTime()/1000) - tzOffset).toString()
+        return {oldestMS, latestMS}
     }
 
 }
@@ -56,7 +65,8 @@ const formatMessages = async (messages, channelID) => {
         if(message.reply_count){
             const replies = await web.conversations.replies({channel: channelID, ts: message.thread_ts}) 
             let thread = ""
-            replies.messages.forEach((reply, idx) => {    
+            replies.messages.forEach((reply, idx) => {   
+                // add logic for list replies
                 idx && (thread += `\t- ${reply.text}\n`)
             })
             conversation += thread
