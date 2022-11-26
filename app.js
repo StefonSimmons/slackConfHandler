@@ -49,7 +49,7 @@ const formatMessages = async (messages, channelID) => {
 // ================
 // HELPER FUNCTIONS
 // ================
-const getDayRefMSRange = (dayRef, tzOffset) => {
+function getDayRefMSRange(dayRef, tzOffset){
     let day = new Date()
 
     if(dayRef === "yesterday"){
@@ -64,7 +64,7 @@ const getDayRefMSRange = (dayRef, tzOffset) => {
     return {oldestMS, latestMS}
 }
 
-const getDateTimeMSRange = (timeRange, tzOffset) => {
+function getDateTimeMSRange(timeRange, tzOffset){
     const [oldest, latest] = timeRange.split('; ')
 
     // oldest datetime extraction
