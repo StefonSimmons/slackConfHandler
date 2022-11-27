@@ -86,6 +86,12 @@ function extractDateTimeMS(dateTimeStr, tzOffset){
         year = today.getFullYear()
         month = today.getMonth() + 1
         day = today.getDate()
+    }else if (dateVal === 'yesterday'){
+        today = new Date()
+        yesterday = new Date(today.setDate(today.getDate() - 1))
+        year = today.getFullYear()
+        month = today.getMonth() + 1
+        day = today.getDate()
     }
     const [HH, MM, Seconds] = timeVal.split(':')
     const dateTime = new Date(year, month-1, day, HH, MM, Seconds)
