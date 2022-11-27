@@ -51,16 +51,12 @@ const formatMessages = async (messages, channelID) => {
 // ================
 function getDayRefMSRange(dayRef, tzOffset){
     let day = new Date()
-
     if(dayRef === "yesterday"){
         day = new Date(day.setDate(day.getDate() - 1))
     }
 
-    const year = day.getFullYear()
-    const month = day.getMonth()
-    const date = day.getDate()
-    const oldestMS = ((new Date(year, month, date).getTime()/1000) - tzOffset).toString()
-    const latestMS = ((day.getTime()/1000) - tzOffset).toString()
+    const oldestMS = ((new Date(day).setHours(0,0,0,0)/1000) - tzOffset).toString()
+    const latestMS = ((new Date(day).setHours(23, 59, 59, 999)/1000) - tzOffset).toString()
     return {oldestMS, latestMS}
 }
 
