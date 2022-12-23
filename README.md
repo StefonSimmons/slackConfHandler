@@ -26,3 +26,14 @@ Once the app is availabled for others, invite the  bot into your workspace
 ```
 /invite Slack to Confluence
 ```
+
+
+## AWS Lambda
+<!-- https://travis.media/developing-aws-lambda-functions-locally-vscode/ -->
+Local Lambda - /Users/stefonsimmons/eng/projects/my-lambdas/ping-slack-handler
+
+Remote Lambda - arn:aws:lambda:us-east-1:629961528593:function:ping-slack-handler-pingSlackHandler-O3qF5wpdJC38
+
+AWS Serverless Application Model (SAM) - A serverless framework for building serverless applications
+- sam build: builds dependencies into a `.aws-sam` dir
+- sam deploy: deploys app to via CloudFormation
