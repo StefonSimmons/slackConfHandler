@@ -94,6 +94,7 @@ function getDateTimeMSRange(dateTimeRange, tzOffset){
 
 function extractDateTimeMS(dateTimeStr, tzOffset){
     const [dateVal, timeVal] = dateTimeStr.split(' ')
+
     let month, day, year
     if(dateVal){
         if(dateVal.includes('/')){
@@ -112,14 +113,15 @@ function extractDateTimeMS(dateTimeStr, tzOffset){
         }
     }
 
-    let HH, MM, Seconds
+    let HH = MM = Seconds = 0 // default value 0
     if(timeVal){
         [HH, MM, Seconds] = timeVal.split(':')
     }
-
+    
     const dateTime = new Date(year, month-1, day, HH, MM, Seconds)
-    // convert to milliseconds and UTC
+    // convert to UTC time in milliseconds
     const dateMS = ((dateTime.getTime()/1000) - tzOffset).toString()
+
     return dateMS
 }
 

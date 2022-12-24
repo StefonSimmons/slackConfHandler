@@ -11,7 +11,10 @@ Slack slash command:
 /save-convo [date_ref]
 /save-convo [single_date]
 
-# Ex: /save-convo 01/18/2022 12:11:09; 01/18/2022 13:08:15
+# Ex: /save-convo 01/18/2022 12:11:09; 01/22/2022 13:08:15
+# Ex: /save-convo 01/18/2022; 01/22/2022
+# Ex: /save-convo yesterday
+# Ex: /save-convo 01/22/2022
 ```
 
 | input     | Description                                                              |
@@ -33,6 +36,8 @@ Once the app is availabled for others, invite the  bot into your workspace
 
 
 ## AWS Lambda
+I've created an AWS lambda with a cron job that pings the slack handler to keep the server awake.
+
 <!-- https://travis.media/developing-aws-lambda-functions-locally-vscode/ -->
 Local Lambda - /Users/stefonsimmons/eng/projects/my-lambdas/ping-slack-handler
 
