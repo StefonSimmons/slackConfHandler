@@ -101,7 +101,6 @@ function extractDateTimeMS(dateTimeStr, tzOffset){
     if(dateVal){
         if(dateVal.includes('/')){
             date = new Date(dateVal)
-            console.log('date', date)
         }else if (dateVal === 'today'){
             date = new Date()
         }else if (dateVal === 'yesterday'){
@@ -117,7 +116,7 @@ function extractDateTimeMS(dateTimeStr, tzOffset){
     
     // const dateTime = new Date(year, month-1, day, HH, MM, Seconds)
     const dateTime = new Date(date.setHours(HH, MM, Seconds))
-    console.log(dateTime, timeVal)
+
     // convert to UTC time in milliseconds
     const dateMS = ((dateTime.getTime()/1000) - tzOffset).toString()
     return dateMS
