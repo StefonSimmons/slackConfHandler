@@ -7,15 +7,19 @@ This program is written in Express.js. The Express app recieves and responds to 
 Slack slash command:
 
 ```
-/send-message [from_date; to_date]
+/save-convo [from_date; to_date]
+/save-convo [date_ref]
+/save-convo [single_date]
 
-# Ex: /slack-message 11/18/2022 12:11:09; 11/18/2022 13:08:15
+# Ex: /save-convo 01/18/2022 12:11:09; 01/18/2022 13:08:15
 ```
 
 | input     | Description                                                              |
 | --------- | ------------------------------------------------------------------------ |
 | from_date | (string) messages after this datetime will be included in results.  |
 | to_date   | (string) messages before this datetime will be included in results. |
+| single_date   | (string) messages on this date will be included in results. |
+| date_ref | (string) messages from this date ref ('today', 'yesterday') will be included in results |
 
 
 ## Setup 

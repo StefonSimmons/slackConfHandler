@@ -16,13 +16,16 @@ const getUserInfo = async (userID) => {
     return await web.users.info({user: userID})
 }
 
-const getDateRangeMS = (timeRange, tzOffset=0) => {
-    if(timeRange.includes(';')){
-        return getDateTimeMSRange(timeRange, tzOffset)
-    }else if (timeRange.toLowerCase() === "today"){
-        return getDayRefMSRange('today', tzOffset)
-    }else if (timeRange.toLowerCase() === "yesterday"){
-        return getDayRefMSRange('yesterday', tzOffset)
+const getDateRangeMS = (dateTimeRange, tzOffset=0) => {
+    const dateRegex = new RegExp('[0-9]{2}\/[0-9]{2}\/[0-9]{4}');
+    if(dateTimeRange.includes(';')){
+        return getDateTimeMSRange(dateTimeRange, tzOffset)
+    }else if (dateTimeRange.toLowerCase() === "today"){
+        return getSingleDayMSRange('today', tzOffset)
+    }else if (dateTimeRange.toLowerCase() === "yesterday"){
+        return getSingleDayMSRange('yesterday', tzOffset)
+    }else if (dateRegex.test(dateTimeRange)){
+        return getSingleDayMSRange('singleDate', tzOffset, dateTimeRange )
     }
 }
 
@@ -49,10 +52,20 @@ const formatMessages = async (messages, channelID) => {
 // ================
 // HELPER FUNCTIONS
 // ================
-function getDayRefMSRange(dayRef, tzOffset){
-    let day = new Date()
+
+/**
+ * For singular date or date ref input conversion to milliseconds
+ * @param {string} dayRef 'today', 'yesterday', single date (ex: '11/21/2022')
+ * @param {number} tzOffset 
+ * @param {string} [dateStr=null]
+ * @returns {object} i.e. 12:00am and 11:59pm datetimes in milliseconds for a singular date
+ */
+function getSingleDayMSRange(dayRef, tzOffset, dateStr=null){
+    let day = new Date() // today date ref
     if(dayRef === "yesterday"){
-        day = new Date(day.setDate(day.getDate() - 1))
+        day = new Date(day.setDate(day.getDate() - 1)) // yesterday date ref
+    }else if (dayRef === "singleDate"){
+        day = new Date(dateStr) // single date 
     }
 
     const oldestMS = ((new Date(day).setHours(0,0,0,0)/1000) - tzOffset).toString()
@@ -60,8 +73,15 @@ function getDayRefMSRange(dayRef, tzOffset){
     return {oldestMS, latestMS}
 }
 
-function getDateTimeMSRange(timeRange, tzOffset){
-    const [oldest, latest] = timeRange.split('; ')
+
+/**
+ * For datetime range input conversion to millseconds 
+ * @param {string} dateTimeRange datetime range (ex: '01/18/2022 12:11:09; 01/18/2022 13:08:15')
+ * @param {number} tzOffset 
+ * @returns {object} oldest and latest datetimes in milliseconds for a specific datetime range
+ */
+function getDateTimeMSRange(dateTimeRange, tzOffset){
+    const [oldest, latest] = dateTimeRange.split('; ')
 
     // oldest datetime extraction
     const oldestMS = extractDateTimeMS(oldest, tzOffset)
@@ -75,23 +95,29 @@ function getDateTimeMSRange(timeRange, tzOffset){
 function extractDateTimeMS(dateTimeStr, tzOffset){
     const [dateVal, timeVal] = dateTimeStr.split(' ')
     let month, day, year
-    if(dateVal.includes('/')){
-        [month, day, year] = dateVal.split('/')
-    }else if (dateVal === 'today'){
-        today = new Date()
-        year = today.getFullYear()
-        month = today.getMonth() + 1
-        day = today.getDate()
-    }else if (dateVal === 'yesterday'){
-        today = new Date()
-        yesterday = new Date(today.setDate(today.getDate() - 1))
-        year = today.getFullYear()
-        month = today.getMonth() + 1
-        day = today.getDate()
+    if(dateVal){
+        if(dateVal.includes('/')){
+            [month, day, year] = dateVal.split('/')
+        }else if (dateVal === 'today'){
+            today = new Date()
+            year = today.getFullYear()
+            month = today.getMonth() + 1
+            day = today.getDate()
+        }else if (dateVal === 'yesterday'){
+            today = new Date()
+            yesterday = new Date(today.setDate(today.getDate() - 1))
+            year = today.getFullYear()
+            month = today.getMonth() + 1
+            day = today.getDate()
+        }
     }
-    const [HH, MM, Seconds] = timeVal.split(':')
-    const dateTime = new Date(year, month-1, day, HH, MM, Seconds)
 
+    let HH, MM, Seconds
+    if(timeVal){
+        [HH, MM, Seconds] = timeVal.split(':')
+    }
+
+    const dateTime = new Date(year, month-1, day, HH, MM, Seconds)
     // convert to milliseconds and UTC
     const dateMS = ((dateTime.getTime()/1000) - tzOffset).toString()
     return dateMS
