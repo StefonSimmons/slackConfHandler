@@ -17,7 +17,7 @@ const getUserInfo = async (userID) => {
 }
 
 const getDateRangeMS = (dateTimeRange, tzOffset=0) => {
-    const dateRegex = new RegExp('[0-9]{2}\/[0-9]{2}\/[0-9]{4}');
+    const dateRegex = new RegExp('[0-9]{2}\/[0-9]{2}\/[0-9]{4}$');
     if(dateTimeRange.includes(';')){
         return getDateTimeMSRange(dateTimeRange, tzOffset)
     }else if (dateTimeRange.toLowerCase() === "today"){
@@ -69,7 +69,7 @@ function getSingleDayMSRange(dayRef, tzOffset, dateStr=null){
     }
 
     const oldestMS = ((new Date(day).setHours(0,0,0,0)/1000) - tzOffset).toString()
-    const latestMS = ((new Date(day).setHours(23, 59, 59, 999)/1000) - tzOffset).toString()
+    const latestMS = extractEndOfDayMS(day, tzOffset)
     return {oldestMS, latestMS}
 }
 
@@ -81,13 +81,15 @@ function getSingleDayMSRange(dayRef, tzOffset, dateStr=null){
  * @returns {object} oldest and latest datetimes in milliseconds for a specific datetime range
  */
 function getDateTimeMSRange(dateTimeRange, tzOffset){
+    const dateRegex = new RegExp('[0-9]{2}\/[0-9]{2}\/[0-9]{4}$');
     const [oldest, latest] = dateTimeRange.split('; ')
 
     // oldest datetime extraction
     const oldestMS = extractDateTimeMS(oldest, tzOffset)
 
     // latest datetime extraction
-    const latestMS = extractDateTimeMS(latest, tzOffset)
+    // if latest is only a date, then get the end of day time in MS else extract the exact specified datetime in MS
+    const latestMS = dateRegex.test(latest) ? extractEndOfDayMS(latest , tzOffset) : extractDateTimeMS(latest, tzOffset)
 
     return {oldestMS, latestMS}
 }
@@ -95,21 +97,16 @@ function getDateTimeMSRange(dateTimeRange, tzOffset){
 function extractDateTimeMS(dateTimeStr, tzOffset){
     const [dateVal, timeVal] = dateTimeStr.split(' ')
 
-    let month, day, year
+    let date
     if(dateVal){
         if(dateVal.includes('/')){
-            [month, day, year] = dateVal.split('/')
+            date = new Date(dateVal)
+            console.log('date', date)
         }else if (dateVal === 'today'){
-            today = new Date()
-            year = today.getFullYear()
-            month = today.getMonth() + 1
-            day = today.getDate()
+            date = new Date()
         }else if (dateVal === 'yesterday'){
             today = new Date()
-            yesterday = new Date(today.setDate(today.getDate() - 1))
-            year = today.getFullYear()
-            month = today.getMonth() + 1
-            day = today.getDate()
+            date = new Date(today.setDate(today.getDate() - 1))
         }
     }
 
@@ -118,11 +115,16 @@ function extractDateTimeMS(dateTimeStr, tzOffset){
         [HH, MM, Seconds] = timeVal.split(':')
     }
     
-    const dateTime = new Date(year, month-1, day, HH, MM, Seconds)
+    // const dateTime = new Date(year, month-1, day, HH, MM, Seconds)
+    const dateTime = new Date(date.setHours(HH, MM, Seconds))
+    console.log(dateTime, timeVal)
     // convert to UTC time in milliseconds
     const dateMS = ((dateTime.getTime()/1000) - tzOffset).toString()
-
     return dateMS
+}
+
+function extractEndOfDayMS(day, tzOffset){
+    return ((new Date(day).setHours(23, 59, 59, 999)/1000) - tzOffset).toString()
 }
 
 module.exports = {getChannelHistory, getDateRangeMS, getUserInfo, formatMessages}
