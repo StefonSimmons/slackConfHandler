@@ -46,7 +46,7 @@ const formatMessages = async (messages, channelID) => {
         }
     }
 
-    return conversation
+    return {text: conversation}
 }
 
 // ================

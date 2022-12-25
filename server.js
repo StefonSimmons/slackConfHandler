@@ -30,7 +30,7 @@ app.post('/', async (req, res) => {
             getDateRangeMS(body.text)
 
         const {messages} = await getChannelHistory(channelID, oldestMS, latestMS)
-        
+
         // Message that is sent back to user in slack
         if(messages.length){
             const formattedContent = await formatMessages(messages, channelID)
@@ -42,6 +42,9 @@ app.post('/', async (req, res) => {
     } catch (error) {
         console.error('ERROR: ', error.message)
     }
+})
 
-    
+app.post('/interactive', async (req, res) => {
+    const {body} = req
+    res.json(body) 
 })
