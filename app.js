@@ -1,4 +1,5 @@
 const { WebClient } = require('@slack/web-api');
+require('dotenv').config();
 
 const web = new WebClient(process.env.SLACK_CONF_BOT_TOKEN);
 

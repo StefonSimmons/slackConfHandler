@@ -12,6 +12,7 @@ app.use(express.urlencoded({ extended: true }))
 
 app.listen(PORT, () => {
     console.log(`Listening on PORT ${PORT}`)
+    console.log(`http://localhost:${PORT}`)
 })
 
 app.get('/', (_, res) => {
@@ -23,7 +24,7 @@ app.post('/', async (req, res) => {
         const {body} = req
         const channelID = body.channel_id
         const {user} = await getUserInfo(body.user_id)
-
+        console.log(body)
         const {oldestMS, latestMS} = ENV === "production" ?
             getDateRangeMS(body.text, user.tz_offset)
         :
@@ -45,6 +46,7 @@ app.post('/', async (req, res) => {
 })
 
 app.post('/interactive', async (req, res) => {
+    // Any interactions with shortcuts, modals, or interactive components will be sent to https://slack-handler.onrender.com/interactive
     const {body} = req
     res.json(body) 
 })
