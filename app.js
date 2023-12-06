@@ -91,6 +91,7 @@ const postCommentToJira = async (comment) => {
         }
     } catch (error) {
         console.log('Post Comment ERROR: ', error.message)
+        return {text: `Post Comment ERROR:, ${error.message}`}
     }
 }
 
