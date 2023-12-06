@@ -1,4 +1,5 @@
 const { WebClient } = require('@slack/web-api');
+const axios = require('axios')
 require('dotenv').config();
 
 const web = new WebClient(process.env.SLACK_CONF_BOT_TOKEN);
@@ -47,7 +48,50 @@ const formatMessages = async (messages, channelID) => {
         }
     }
 
-    return {text: conversation}
+    return conversation
+}
+
+
+/**
+ * Uses the JIRA cloud API to post formatted Slack conversations to Jira
+ * @param {string} comment 
+ * @returns {object}
+ */
+const postCommentToJira = async (comment) => {
+    const url = 'https://slack-to-jira-dd.atlassian.net/rest/api/3/issue/TP-1/comment'
+    const basicAuth = {
+        auth: {
+            username: 'stefon.simmons@datadoghq.com',
+            password: process.env.ATLASSIAN_KEY
+        }
+    }
+    const bodyData = {
+        "body": {
+          "content": [
+            {
+              "content": [
+                {
+                  "text": comment,
+                  "type": "text"
+                }
+              ],
+              "type": "paragraph"
+            }
+          ],
+          "type": "doc",
+          "version": 1
+        }
+    };
+    try {
+        const resp = await axios.post(url, bodyData, basicAuth)
+        if(resp.status === 201){
+            return {text: 'Successfully posted to Jira!'}
+        }else{
+            return {text: `Post Comment To Jira Issue: Response Status ${resp.status}`}
+        }
+    } catch (error) {
+        console.log('Post Comment ERROR: ', error.message)
+    }
 }
 
 // ================
@@ -127,4 +171,4 @@ function extractEndOfDayMS(day, tzOffset){
     return ((new Date(day).setHours(23, 59, 59, 999)/1000) - tzOffset).toString()
 }
 
-module.exports = {getChannelHistory, getDateRangeMS, getUserInfo, formatMessages}
+module.exports = {getChannelHistory, getDateRangeMS, getUserInfo, formatMessages, postCommentToJira}

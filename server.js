@@ -2,7 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const logger = require('morgan')
-const {getChannelHistory, getDateRangeMS, getUserInfo, formatMessages} = require('./app')
+const {getChannelHistory, getDateRangeMS, getUserInfo, formatMessages, postCommentToJira} = require('./app')
 
 const PORT = process.env.PORT || 3000
 const ENV = process.env.PORT ? 'production': 'dev'
@@ -24,7 +24,6 @@ app.post('/', async (req, res) => {
         const {body} = req
         const channelID = body.channel_id
         const {user} = await getUserInfo(body.user_id)
-        console.log(body)
         const {oldestMS, latestMS} = ENV === "production" ?
             getDateRangeMS(body.text, user.tz_offset)
         :
@@ -35,13 +34,14 @@ app.post('/', async (req, res) => {
         // Message that is sent back to user in slack
         if(messages.length){
             const formattedContent = await formatMessages(messages, channelID)
-            res.send(formattedContent)
+            const commentPostedMsg = await postCommentToJira(formattedContent)
+            res.status(201).send(commentPostedMsg)
         }else{
             res.status(404).send({err: "no messages"})
         }
         
     } catch (error) {
-        console.error('ERROR: ', error.message)
+        console.error('POST ERROR: ', error.message)
     }
 })
 
