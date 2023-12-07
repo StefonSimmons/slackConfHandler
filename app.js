@@ -246,8 +246,15 @@ async function getAccessToken (authCode) {
         "code": authCode,
         "redirect_uri": "https://slack-handler.onrender.com"
     }
+    console.log('HMM:: ', process.env.OAUTH2_CLIENT_SECRET)
+    const config = {
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }
     try {
-        const resp = await axios.post(url, body)
+        const resp = await axios.post(url, body, config)
+        console.log('ACCESS TOKEN??:: ',resp)
         return resp['access_token']
     } catch (error) {
         console.log('GET ACCESS TOKEN ERROR: ', error.message)
