@@ -104,50 +104,6 @@ const postCommentToJira2_0 = async (comment, cloudID, accessToken) => {
 
 }
 
-
-/**
- * Uses the JIRA cloud API to post formatted Slack conversations to Jira
- * @param {string} comment 
- * @returns {object}
- */
-// const postCommentToJira = async (comment) => {
-//     const url = 'https://slack-to-jira-dd.atlassian.net/rest/api/3/issue/TP-1/comment'
-//     const basicAuth = {
-//         auth: {
-//             username: 'stefon.simmons@datadoghq.com',
-//             password: process.env.ATLASSIAN_KEY
-//         }
-//     }
-//     const bodyData = {
-//         "body": {
-//           "content": [
-//             {
-//               "content": [
-//                 {
-//                   "text": comment,
-//                   "type": "text"
-//                 }
-//               ],
-//               "type": "paragraph"
-//             }
-//           ],
-//           "type": "doc",
-//           "version": 1
-//         }
-//     };
-//     try {
-//         const resp = await axios.post(url, bodyData, basicAuth)
-//         if(resp.status === 201){
-//             return {text: 'Successfully posted to Jira!'}
-//         }else{
-//             return {text: `Post Comment To Jira Issue: Response Status ${resp.status}`}
-//         }
-//     } catch (error) {
-//         console.log('Post Comment ERROR: ', error.message)
-//         return {text: `Post Comment ERROR:, ${error.message}`}
-//     }
-// }
-
 // ================
 // HELPER FUNCTIONS
 // ================
@@ -231,12 +187,22 @@ function extractEndOfDayMS(day, tzOffset){
 // HELPER FUNCTIONS OAuth 2.0
 //
 
+/**
+ * Direct user to Auth URL
+ * @param {string} formattedContent 
+ */
 async function directToAuthURL (formattedContent) {
     const state = Buffer.from(`${formattedContent};${v4()}`).toString('base64')
     const url = `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=8d1S71pJUHPMkOZ2HL5D35vUtx9YoZjG&scope=write%3Ajira-work&redirect_uri=https%3A%2F%2Fslack-handler.onrender.com&state=${state}&response_type=code&prompt=consent`
     await open(url)
 }
 
+/**
+ * Exchange the temp auth code found in the auth to get an access token
+ * Access Token: authorizes requests to the Jira APIs for the Atlassian site
+ * @param {string} authCode 
+ * @returns {string} access token
+ */
 async function getAccessToken (authCode) {
     const url = "https://auth.atlassian.com/oauth/token"
     const body = {
@@ -246,21 +212,21 @@ async function getAccessToken (authCode) {
         "code": authCode,
         "redirect_uri": "https://slack-handler.onrender.com"
     }
-    const config = {
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }
+
     try {
-        const resp = await axios.post(url, body, config)
+        const resp = await axios.post(url, body)
         return resp.data['access_token']
     } catch (error) {
         console.log('GET ACCESS TOKEN ERROR: ', error.message)
     }
 }
 
+/**
+ * Get cloud id for slackConfHandler 
+ * @param {string} accessToken 
+ * @returns {string} cloud id
+ */
 async function getCloudID(accessToken) {
-    // get cloud id for slack handler
     const url = "https://api.atlassian.com/oauth/token/accessible-resources"
     const config = {
         headers: {
