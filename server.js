@@ -18,14 +18,15 @@ app.listen(PORT, () => {
     console.log(`Listening on PORT ${PORT}`)
     console.log(`http://localhost:${PORT}`)
 })
-let formattedContent = ''
+// let formattedContent = ''
 app.get('/', async (req, res) => {
-    console.log('FORMED:: ', formattedContent)
-    if(req.query.code && formattedContent){
+    const {code, state} = req.query
+    if(code && state){
         // accessToken = await getAccessToken(req.query.code)
         // cloudID = await getCloudID(accessToken)
-        const accessToken = await getAccessToken(req.query.code)
+        const accessToken = await getAccessToken(code)
         const cloudID = await getCloudID(accessToken)
+        const formattedContent = Buffer.from(state, 'base64').toString('ascii').split(';')[0] // formatted msg from state
         const commentPostedMsg = await postCommentToJira2_0(formattedContent, cloudID, accessToken)
         res.status(201).send(commentPostedMsg)
     }
@@ -38,7 +39,6 @@ app.post('/', async (req, res) => {
     // Once I approve the oauth app.
     // I need to post the comment to jira
     try {
-       await directToAuthURL()
         const {body} = req
         const channelID = body.channel_id
         const {user} = await getUserInfo(body.user_id)
@@ -52,7 +52,8 @@ app.post('/', async (req, res) => {
         // Message that is sent back to user in slack
         if(messages.length){
             // const formattedContent = await formatMessages(messages, channelID)
-            formattedContent = await formatMessages(messages, channelID)
+            const formattedContent = await formatMessages(messages, channelID)
+            await directToAuthURL(formattedContent)
             // const commentPostedMsg = await postCommentToJira2_0(formattedContent, cloudID, accessToken)
             // res.status(201).send(commentPostedMsg)
         }else{
