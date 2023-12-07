@@ -27,6 +27,9 @@ app.get('/', async (req, res) => {
         const accessToken = await getAccessToken(code)
         const cloudID = await getCloudID(accessToken)
         const formattedContent = Buffer.from(state, 'base64').toString('ascii').split(';')[0] // formatted msg from state
+        console.log('CONTENT:: ',formattedContent)
+        console.log('CLOUD:: ',cloudID)
+        console.log('TOKEN:: ',accessToken)
         const commentPostedMsg = await postCommentToJira2_0(formattedContent, cloudID, accessToken)
         res.status(201).send(commentPostedMsg)
     }
