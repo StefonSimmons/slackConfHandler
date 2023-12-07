@@ -4,6 +4,8 @@
 import {WebClient} from '@slack/web-api'
 import axios from 'axios'
 import open from 'open'
+import { v4 } from 'uuid';
+
 import 'dotenv/config'
 
 
@@ -230,7 +232,7 @@ function extractEndOfDayMS(day, tzOffset){
 //
 
 async function directToAuthURL (formattedContent) {
-    const state = Buffer.from(`${formattedContent};${crypto.randomUUID()}`).toString('base64')
+    const state = Buffer.from(`${formattedContent};${v4()}`).toString('base64')
     const url = `https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=8d1S71pJUHPMkOZ2HL5D35vUtx9YoZjG&scope=write%3Ajira-work&redirect_uri=https%3A%2F%2Fslack-handler.onrender.com&state=${state}&response_type=code&prompt=consent`
     await open(url)
 }
