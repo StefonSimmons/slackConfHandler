@@ -246,7 +246,6 @@ async function getAccessToken (authCode) {
         "code": authCode,
         "redirect_uri": "https://slack-handler.onrender.com"
     }
-    console.log('HMM:: ', process.env.OAUTH2_CLIENT_SECRET)
     const config = {
         headers: {
             "Content-Type": "application/json"
@@ -254,8 +253,7 @@ async function getAccessToken (authCode) {
     }
     try {
         const resp = await axios.post(url, body, config)
-        console.log('ACCESS TOKEN??:: ',resp)
-        return resp['access_token']
+        return resp.data['access_token']
     } catch (error) {
         console.log('GET ACCESS TOKEN ERROR: ', error.message)
     }
@@ -272,7 +270,7 @@ async function getCloudID(accessToken) {
     }
     try {
         const resp = await axios.get(url, config)
-        return resp[0].id
+        return resp.data[0].id
     } catch (error) {
         console.log('GET CLOUD ID ERROR: ', error.message)
     }
