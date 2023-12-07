@@ -24,6 +24,7 @@ app.get('/', async (req, res) => {
     if(code && state){
         // accessToken = await getAccessToken(req.query.code)
         // cloudID = await getCloudID(accessToken)
+        console.log('CODE:: ', code)
         const accessToken = await getAccessToken(code)
         const cloudID = await getCloudID(accessToken)
         const formattedContent = Buffer.from(state, 'base64').toString('ascii').split(';')[0] // formatted msg from state

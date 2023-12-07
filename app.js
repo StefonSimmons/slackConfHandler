@@ -265,7 +265,7 @@ async function getCloudID(accessToken) {
     }
     try {
         const resp = await axios.get(url, config)
-        return resp.id
+        return resp[0].id
     } catch (error) {
         console.log('GET CLOUD ID ERROR: ', error.message)
     }
