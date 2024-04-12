@@ -1,4 +1,4 @@
-# Slack to Confluence Slack app
+# Slack to JIRA Slack app
 
 A Slack slash command to save messages by date to confluence. Request URL: https://slack-handler.onrender.com.
 
@@ -47,6 +47,7 @@ or go to https://testslacktoco-rzi8358.slack.com/apps/A04BLHB7MPC-slack-to-confl
 ### Local Development
 We are passing the OAuth Tokens for Your Workspace into the The `WebClient`. Tokens are automatically generated when you install the app to a team. 
 
+
 **Locate and Use**
 https://api.slack.com/
 under the `Slack To Confluence` app, select **OAuth & Permissions** 
@@ -67,3 +68,7 @@ AWS Serverless Application Model (SAM) - A serverless framework for building ser
 
 - sam build: builds dependencies into a `.aws-sam` dir
 - sam deploy: deploys app to via CloudFormation
+
+
+## Change log
+I pivotted to use Jira instead of Confluence for this app. 
